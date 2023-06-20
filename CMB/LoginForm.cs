@@ -1,14 +1,17 @@
 ﻿using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static CMB.BancoDeDados;
+
 
 namespace CMB
 {
@@ -17,6 +20,7 @@ namespace CMB
         public LoginForm()
         {
             InitializeComponent();
+            txtSenha.UseSystemPasswordChar = true;
         }
 
         private void LoginForm_Load(object sender, EventArgs e)
@@ -26,6 +30,8 @@ namespace CMB
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
+
+
             var email = txtEmail.Text;
             var senha = txtSenha.Text;
 
@@ -43,14 +49,19 @@ namespace CMB
 
                     if (result > 0)
                     {
-                        HomeForm homeForm = new HomeForm();
 
-                        homeForm.Show();
+
+                        Hide();
+                        HomeForm homeForm = new HomeForm();
+                        homeForm.ShowDialog();
+                        Show();
+
                     }
                     else
                     {
                         MessageBox.Show("Usuário não cadastrado!");
                     }
+                   
                 }
             }
         }

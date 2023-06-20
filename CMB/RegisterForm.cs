@@ -17,6 +17,8 @@ namespace CMB
         public RegisterForm()
         {
             InitializeComponent();
+            txtSenha.UseSystemPasswordChar = true;
+            txtConfirmarSenha.UseSystemPasswordChar = true;
         }
 
         private void btnCadastrar_Click(object sender, EventArgs e)
@@ -51,6 +53,7 @@ namespace CMB
                     if (result > 0)
                     {
                         MessageBox.Show("Usuário cadastrado com sucesso!");
+                        Close();
                     }
                     else
                     {
@@ -58,6 +61,11 @@ namespace CMB
                     }
                 }
             }
+        }
+
+        private void RegisterForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
