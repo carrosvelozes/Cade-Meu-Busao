@@ -131,7 +131,6 @@
             this.dataGridView.Name = "dataGridView";
             this.dataGridView.Size = new System.Drawing.Size(517, 150);
             this.dataGridView.TabIndex = 13;
-            this.dataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellContentClick);
             // 
             // ConsultarForm
             // 
@@ -148,6 +147,9 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ConsultarForm";
             this.Text = "ConsultarForm";
             this.Load += new System.EventHandler(this.ConsultarForm_Load);

@@ -35,6 +35,7 @@
             this.labelProblema3 = new System.Windows.Forms.Label();
             this.labelProblema4 = new System.Windows.Forms.Label();
             this.labelProblema5 = new System.Windows.Forms.Label();
+            this.lblWelcome = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button1
@@ -102,11 +103,21 @@
             this.labelProblema5.TabIndex = 6;
             this.labelProblema5.Text = "label1";
             // 
+            // lblWelcome
+            // 
+            this.lblWelcome.AutoSize = true;
+            this.lblWelcome.Location = new System.Drawing.Point(482, 43);
+            this.lblWelcome.Name = "lblWelcome";
+            this.lblWelcome.Size = new System.Drawing.Size(35, 13);
+            this.lblWelcome.TabIndex = 7;
+            this.lblWelcome.Text = "label1";
+            // 
             // HomeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 461);
+            this.Controls.Add(this.lblWelcome);
             this.Controls.Add(this.labelProblema5);
             this.Controls.Add(this.labelProblema4);
             this.Controls.Add(this.labelProblema3);
@@ -114,6 +125,9 @@
             this.Controls.Add(this.labelProblema1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "HomeForm";
             this.Text = "HomeForm";
             this.Load += new System.EventHandler(this.HomeForm_Load);
@@ -131,5 +145,6 @@
         private System.Windows.Forms.Label labelProblema3;
         private System.Windows.Forms.Label labelProblema4;
         private System.Windows.Forms.Label labelProblema5;
+        private System.Windows.Forms.Label lblWelcome;
     }
 }

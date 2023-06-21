@@ -104,6 +104,9 @@
             this.Controls.Add(this.txtEmail);
             this.Controls.Add(this.txtNascimento);
             this.Controls.Add(this.txtNome);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "RegisterForm";
             this.Text = "RegisterForm";
             this.Load += new System.EventHandler(this.RegisterForm_Load);

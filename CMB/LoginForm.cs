@@ -15,11 +15,17 @@ using static CMB.BancoDeDados;
 
 namespace CMB
 {
+
     public partial class LoginForm : Form
     {
+        public string Email { get; private set; }
+
+
         public LoginForm()
         {
             InitializeComponent();
+
+            //esconde as caracteres do campo senha
             txtSenha.UseSystemPasswordChar = true;
         }
 
@@ -28,17 +34,41 @@ namespace CMB
 
         }
 
-        private void btnLogin_Click(object sender, EventArgs e)
+        //metodo pra obter o nome de usuario de acordo com o @email utilizado para login.
+        private string ObterNomeUsuario(string email)
         {
-
-
-            var email = txtEmail.Text;
-            var senha = txtSenha.Text;
-
+            //conexao ao banco por meio da classe BancoDeDados.cs
             var dbManager = new DatabaseManager();
             using (var connection = dbManager.GetConnection())
             {
                 connection.Open();
+                var query = "SELECT nome FROM passageiros WHERE email = @email";
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@email", email);
+
+                    var nomeUsuario = command.ExecuteScalar()?.ToString();
+                    return nomeUsuario;
+                }
+            }
+        }
+
+
+        //evento de clique do botao login
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+
+            //variaveis para guardar email e senha de acordo com o que for preenchido nas textbox
+            var email = txtEmail.Text;
+            var senha = txtSenha.Text;
+
+            //conexao ao banco por meio da classe BancoDeDados.cs
+            var dbManager = new DatabaseManager();
+            using (var connection = dbManager.GetConnection())
+            {
+                connection.Open();
+
+                //select que verifica se a conta existe na tabela passageiros
                 var query = "SELECT COUNT(*) FROM passageiros WHERE email = @email AND senha = @senha";
                 using (var command = new MySqlCommand(query, connection))
                 {
@@ -49,16 +79,27 @@ namespace CMB
 
                     if (result > 0)
                     {
+                        var nomeUsuario = ObterNomeUsuario(email); //funcao para obter o nome com base no email adicionada a variavel nomeUsuario
+                        Email = email; //atribui o valor de email para a propriedade Email
 
 
                         Hide();
                         HomeForm homeForm = new HomeForm();
+                        homeForm.UserName = nomeUsuario;
+                        homeForm.Email = email; //aqui o email passa para o HomeForm pelos getters e setters
                         homeForm.ShowDialog();
+
+                        string emailUsuario = homeForm.Email;
+                        EnviarForm enviarForm = new EnviarForm();
+                        enviarForm.Email = emailUsuario; //aqui o email passa para o EnviarForm pelos getters e setters
+
+                        enviarForm.ShowDialog();
                         Show();
 
                     }
                     else
                     {
+                        //retorno da condicional caso o usuario nao esteja cadastrado
                         MessageBox.Show("Usuário não cadastrado!");
                     }
                    
@@ -66,18 +107,14 @@ namespace CMB
             }
         }
 
-        private void btnFormCadastro_Click(object sender, EventArgs e)
-        {
-            RegisterForm registerForm = new RegisterForm();
-
-            registerForm.Show();
-        }
-
+        //abre o formulario de cadastro
         private void btnFormCadastro_Click_1(object sender, EventArgs e)
         {
             RegisterForm registerForm = new RegisterForm();
 
-            registerForm.Show();
+            Hide();
+            registerForm.ShowDialog();
+            Show();
         }
     }
 }

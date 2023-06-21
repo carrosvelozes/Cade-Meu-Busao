@@ -8,7 +8,7 @@ USE cadastro;
 
 CREATE TABLE passageiros (
   id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  nome varchar(20) DEFAULT NULL,
+  nome varchar(50) DEFAULT NULL,
   nascimento varchar(50) DEFAULT NULL,
   email varchar(50) DEFAULT NULL,
   senha varchar(32) DEFAULT NULL
@@ -92,7 +92,6 @@ INSERT INTO passageiros (nome, email, senha, nascimento) VALUES
 ('Jefersson', 'jefersson@exemplo.com', '123', '2023-01-01'),
 ('Jennifer', 'jennifer@exemplo.com', '123', '2023-01-02');
 
-
 INSERT INTO linhas_onibus (nome, numero, descricao) VALUES
 ('Linha Verde', '200', 'Linha que percorre a zona norte até a zona sul'),
 ('Linha Vermelho', '210', 'Linha que percorre a zona norte até a zona sul'),
@@ -128,11 +127,11 @@ INSERT INTO motoristas (nome, cnh) VALUES
 ('Roberto Alves', '87654321');
 
 INSERT INTO problemas_tipos (descricao) VALUES
-('Ônibus atrasou'),
-('Ônibus lotado'),
-('Ônibus assaltado'),
-('Ônibus sofreu acidente'),
-('Ônibus quebrou');
+('Problema de atraso'),
+('Problema de lotacao'),
+('Problema de seguranca'),
+('Qualidade do servico'),
+('Outros');
 
 INSERT INTO problemas_reportados (linha_id, tipo_problema_id, usuario_id, descricao, data_hora) VALUES
 (1, 1, 1, 'O ônibus estava atrasado hoje', '2023-06-01'),

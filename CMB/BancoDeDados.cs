@@ -5,8 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using static CMB.BancoDeDados;
 
 
+
+
+/*classe criada para realizar conexoes com o retorno do connectionString,
+entao todo metodo do qual realizamos uma query podemos chamar:
+
+        var dbManager = new DatabaseManager();
+        using (var connection = dbManager.GetConnection())
+*/
 namespace CMB
 {
     public class BancoDeDados

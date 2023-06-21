@@ -123,7 +123,6 @@
     <Compile Include="RegisterForm.Designer.cs">
       <DependentUpon>RegisterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Session.cs" />
     <EmbeddedResource Include="ConsultarForm.resx">
       <DependentUpon>ConsultarForm.cs</DependentUpon>
     </EmbeddedResource>

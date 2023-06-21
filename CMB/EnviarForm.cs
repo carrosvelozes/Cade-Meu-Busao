@@ -4,30 +4,48 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
+using static System.Windows.Forms.LinkLabel;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using static CMB.BancoDeDados;
 
 namespace CMB
 {
     public partial class EnviarForm : Form
     {
+        public string Email { get; set; }
         private MySqlConnection connection;
-        private const string connectionString = "Server=localhost;Database=cadastro;Uid=root;Pwd=root;";
-        public string EmailSalvo { get; set; }
+ 
 
-        public EnviarForm()
+         public EnviarForm()
         {
             InitializeComponent();
             PopulateComboBox();
+            
         }
 
+        //recebe o email como string
+        public EnviarForm(string email) : this()
+        {
+            Email = email;
+        }
+
+
+        //combo boxes que acessa as linhas de onibus, os tipos de problemas existentes e mostra para o usuario
+        //fazendo com que o usuario possa selecionar uma linha e um problema para reportar
         private void PopulateComboBox()
         {
-            using (connection = new MySqlConnection(connectionString))
+
+            //conexao ao banco por meio da classe BancoDeDados.cs
+            var dbManager = new DatabaseManager();
+            using (var connection = dbManager.GetConnection())
             {
+                //execao retornando um erro caso algum campo nao seja preenchido
                 try
                 {
                     connection.Open();
 
-                    // Preencher ComboBox1 com os números das linhas de ônibus
+                    //preenche a combobox 1 com a coluna numero da tabela linhas_onibus
                     string query1 = "SELECT numero FROM linhas_onibus";
                     using (MySqlCommand command = new MySqlCommand(query1, connection))
                     {
@@ -40,7 +58,7 @@ namespace CMB
                         }
                     }
 
-                    // Preencher ComboBox2 com os tipos de problemas existentes
+                    //preenche a combobox 2 com a coluna descricao da tabela problemas_tipo
                     string query2 = "SELECT descricao FROM problemas_tipos";
                     using (MySqlCommand command = new MySqlCommand(query2, connection))
                     {
@@ -60,14 +78,19 @@ namespace CMB
             }
         }
 
+
+        //ao clicar no botao os conteudos das comboboxes junto ao texto descrito na textrichbox preenchem a tabela problemas_reportados
         private void button1_Click(object sender, EventArgs e)
         {
+            //alocando os campos a variaveis
             string selectedBusLine = comboBox1.SelectedItem?.ToString();
             string problemDescription = richTextBox1.Text.Trim();
             string selectedProblemType = comboBox2.SelectedItem?.ToString();
-            string userEmail = txtEmail.Text.Trim(); // Supondo que haja um campo de email no formulário
+            string userEmail = txtEmail.Text.Trim(); //
             int userId = GetUserId(userEmail);
 
+
+            //condicionais caso os campos estejam nulos
             if (string.IsNullOrEmpty(selectedBusLine))
             {
                 MessageBox.Show("Selecione uma linha de ônibus.");
@@ -101,14 +124,22 @@ namespace CMB
                 return;
             }
 
+            //recupera o tempo atual do computador
             DateTime currentDateTime = DateTime.Now;
 
-            using (connection = new MySqlConnection(connectionString))
+
+
+            //conexao ao banco por meio da classe BancoDeDados.cs
+            var dbManager = new DatabaseManager();
+            using (var connection = dbManager.GetConnection())
             {
+
+                //execao retornando um erro caso algum campo nao seja preenchido
                 try
                 {
                     connection.Open();
 
+                    //Insere os dados descricao, data_hora, tipo_problema_id, linha_id, usuario_id a tabela problemas_reportados
                     string query = "INSERT INTO problemas_reportados (descricao, data_hora, tipo_problema_id, linha_id, usuario_id) VALUES (@descricao, @dataHora, @tipoProblemaId, @linhaId, @usuarioId)";
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -133,13 +164,19 @@ namespace CMB
             }
         }
 
+
+        //recupera o ID do usuario atraves do email do qual foi enviado o formulario,
         private int GetUserId(string userEmail)
         {
             int userId = 0;
             string query = "SELECT id FROM passageiros WHERE email = @userEmail";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            //conexao ao banco por meio da classe BancoDeDados.cs
+            var dbManager = new DatabaseManager();
+            using (var connection = dbManager.GetConnection())
             {
+                //execao retornando um erro caso o ID do usuario nao seja capturado
                 try
                 {
                     connection.Open();
@@ -165,13 +202,19 @@ namespace CMB
         }
 
 
+        
+        //recupera o ID da linha selecionada na combobox e verifica o numero da linha de acordo com a opcao selecionada na combobox.
         private int GetBusLineId(string selectedBusLine)
         {
             int busLineId = 0;
             string query = "SELECT id FROM linhas_onibus WHERE numero = @selectedBusLine";
 
-            using (connection = new MySqlConnection(connectionString))
+
+            //conexao ao banco por meio da classe BancoDeDados.cs
+            var dbManager = new DatabaseManager();
+            using (var connection = dbManager.GetConnection())
             {
+                //execao retornando um erro caso o ID da linha nao seja obtido
                 try
                 {
                     connection.Open();
@@ -196,13 +239,19 @@ namespace CMB
             return busLineId;
         }
 
+
+        //recupera o ID do problema selecionado na combobox e verifica se a descricao do problema esta de acordo com a opcao selecionada na combobox.
         private int GetProblemTypeId(string selectedProblemType)
         {
             int problemTypeId = 0;
             string query = "SELECT id FROM problemas_tipos WHERE descricao = @selectedProblemType";
 
-            using (connection = new MySqlConnection(connectionString))
+
+            //conexao ao banco por meio da classe BancoDeDados.cs
+            var dbManager = new DatabaseManager();
+            using (var connection = dbManager.GetConnection())
             {
+                //execao retornando um erro caso o ID do problema nao seja obtido
                 try
                 {
                     connection.Open();
@@ -227,7 +276,15 @@ namespace CMB
             return problemTypeId;
         }
 
+
+        //alocando email a textbox txtEmail que se encontra disabled para que o email utilizado para login seja o mesmo email que envia o feedback.
         private void EnviarForm_Load(object sender, EventArgs e)
+        {
+            txtEmail.Text = Email;
+
+        }
+
+        private void txtEmail_TextChanged(object sender, EventArgs e)
         {
 
         }

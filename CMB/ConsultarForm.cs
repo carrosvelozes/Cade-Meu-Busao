@@ -2,12 +2,12 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using static CMB.BancoDeDados;
 
 namespace CMB
 {
     public partial class ConsultarForm : Form
     {
-        private string connectionString = "Server=localhost;Database=cadastro;Uid=root;Pwd=root;";
 
         public ConsultarForm()
         {
@@ -15,11 +15,14 @@ namespace CMB
             PopulateComboBox();
         }
 
+        //comboBox que seleciona a linha de onibus
         private void PopulateComboBox()
         {
             string query = "SELECT numero FROM linhas_onibus";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            //conexao ao banco por meio da classe BancoDeDados.cs
+            var dbManager = new DatabaseManager();
+            using (var connection = dbManager.GetConnection())
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
@@ -35,17 +38,31 @@ namespace CMB
             }
         }
 
+
+        
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedBusLine = comboBox1.SelectedItem.ToString();
 
-            // Query to get line name and count of reported issues
+            //querys de innerjoin que selecionam dados sobre os problemas reportados da linha selecionada na combobox
             string query1 = "SELECT * FROM linhas_onibus WHERE numero = @selectedBusLine";
-            string query2 = "SELECT COUNT(*) AS TotalProblems, pt.descricao AS MostReportedProblem FROM problemas_reportados pr INNER JOIN linhas_onibus lo ON pr.linha_id = lo.id INNER JOIN problemas_tipos pt ON pr.tipo_problema_id = pt.id WHERE lo.numero = @selectedBusLine GROUP BY pt.descricao";
-            string query3 = "Select problemas_reportados.descricao, problemas_reportados.data_hora, problemas_tipos.descricao\r\nFrom linhas_onibus inner join problemas_reportados \r\n\ton linhas_onibus.id = problemas_reportados.linha_id inner join problemas_tipos\r\n\ton problemas_reportados.tipo_problema_id = problemas_tipos.id\r\n    Where linhas_onibus.numero = @selectedBusLine;";
+            string query2 = "SELECT COUNT(*) AS TotalProblems, pt.descricao AS MostReportedProblem " +
+                            "FROM problemas_reportados pr " +
+                            "INNER JOIN linhas_onibus lo ON pr.linha_id = lo.id " +
+                            "INNER JOIN problemas_tipos pt ON pr.tipo_problema_id = pt.id " +
+                            "WHERE lo.numero = @selectedBusLine " +
+                            "GROUP BY pt.descricao " +
+                            "ORDER BY COUNT(*) DESC " +
+                            "LIMIT 1";
+            string query3 = "SELECT problemas_reportados.descricao, problemas_reportados.data_hora, problemas_tipos.descricao " +
+                            "FROM linhas_onibus " +
+                            "INNER JOIN problemas_reportados ON linhas_onibus.id = problemas_reportados.linha_id " +
+                            "INNER JOIN problemas_tipos ON problemas_reportados.tipo_problema_id = problemas_tipos.id " +
+                            "WHERE linhas_onibus.numero = @selectedBusLine";
 
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            //conexao ao banco por meio da classe BancoDeDados.cs
+            var dbManager = new DatabaseManager();
+            using (var connection = dbManager.GetConnection())
             {
                 using (MySqlCommand command = new MySqlCommand(query1, connection))
                 {
@@ -70,7 +87,8 @@ namespace CMB
                     {
                         if (reader.Read())
                         {
-                            textBox3.Text = reader["TotalProblems"].ToString();
+                            int totalProblems = reader.GetInt32("TotalProblems");
+                            textBox3.Text = totalProblems.ToString();
                             textBox4.Text = reader.GetString("MostReportedProblem");
                         }
                     }
@@ -80,58 +98,39 @@ namespace CMB
                 {
                     command.Parameters.AddWithValue("@selectedBusLine", selectedBusLine);
                     MySqlDataReader reader = command.ExecuteReader();
-                    
-                        dataGridView.Rows.Clear(); // Limpa as colunas existentes, se houver
 
-                        // Adiciona as colunas ao DataGridView
+                    //limpa as linhas e colunas do DataGridView para que as informacoes nao se acumulem a cada vez que uma linha eh consultada
+                    dataGridView.Columns.Clear();
+                    dataGridView.Rows.Clear();
+
+                    //adiciona as colunas ao DataGridView
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        dataGridView.Columns.Add(reader.GetName(i), reader.GetName(i));
+                    }
+
+                    //adiciona as linhas ao DataGridView
+                    while (reader.Read())
+                    {
+                        object[] row = new object[reader.FieldCount];
                         for (int i = 0; i < reader.FieldCount; i++)
                         {
-                            dataGridView.Columns.Add(reader.GetName(i), reader.GetName(i));
+                            row[i] = reader[i];
                         }
-
-                        // Adiciona as linhas ao DataGridView
-                        while (reader.Read())
-                        {
-                            object[] row = new object[reader.FieldCount];
-                            for (int i = 0; i < reader.FieldCount; i++)
-                            {
-                                row[i] = reader[i];
-                            }
-                            dataGridView.Rows.Add(row);
-                            dataGridView.Rows.Clear();
-
-                        int rowIndex = dataGridView.Rows.Add(row); // Obtém o índice da linha recém-adicionada
-
-                            dataGridView.Rows.Add(row);
-
-                            if (dataGridView.Rows.Count == 1) // Verifica se é a primeira tabela
-                            {
-                                dataGridView.Columns[0].FillWeight = 70; // Ajuste o valor do FillWeight conforme necessário
-                            }
-
-                            dataGridView.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill; // Configura o preenchimento automático para as demais colunas
+                        dataGridView.Rows.Add(row);
                     }
+
                     reader.Close();
-                    connection.Close();                   
                 }
 
+                connection.Close();
             }
         }
-
-
 
         private void ConsultarForm_Load(object sender, EventArgs e)
         {
 
         }
 
-        private void dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-
-
-        // ... Outros métodos e eventos
     }
 }
