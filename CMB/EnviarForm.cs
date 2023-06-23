@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
-using static System.Windows.Forms.LinkLabel;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using static CMB.BancoDeDados;
 
 namespace CMB
@@ -83,15 +77,15 @@ namespace CMB
         private void button1_Click(object sender, EventArgs e)
         {
             //alocando os campos a variaveis
-            string selectedBusLine = comboBox1.SelectedItem?.ToString();
+            string linhaSelecionada = comboBox1.SelectedItem?.ToString();
             string problemDescription = richTextBox1.Text.Trim();
-            string selectedProblemType = comboBox2.SelectedItem?.ToString();
+            string tipoProblemaSelecionado = comboBox2.SelectedItem?.ToString();
             string userEmail = txtEmail.Text.Trim(); //
             int userId = GetUserId(userEmail);
 
 
             //condicionais caso os campos estejam nulos
-            if (string.IsNullOrEmpty(selectedBusLine))
+            if (string.IsNullOrEmpty(linhaSelecionada))
             {
                 MessageBox.Show("Selecione uma linha de ônibus.");
                 return;
@@ -103,14 +97,14 @@ namespace CMB
                 return;
             }
 
-            if (string.IsNullOrEmpty(selectedProblemType))
+            if (string.IsNullOrEmpty(tipoProblemaSelecionado))
             {
                 MessageBox.Show("Selecione um tipo de problema.");
                 return;
             }
 
-            int busLineId = GetBusLineId(selectedBusLine);
-            int problemTypeId = GetProblemTypeId(selectedProblemType);
+            int busLineId = GetBusLineId(linhaSelecionada);
+            int problemTypeId = GetProblemTypeId(tipoProblemaSelecionado);
 
             if (busLineId == 0)
             {
@@ -204,10 +198,10 @@ namespace CMB
 
         
         //recupera o ID da linha selecionada na combobox e verifica o numero da linha de acordo com a opcao selecionada na combobox.
-        private int GetBusLineId(string selectedBusLine)
+        private int GetBusLineId(string linhaSelecionada)
         {
             int busLineId = 0;
-            string query = "SELECT id FROM linhas_onibus WHERE numero = @selectedBusLine";
+            string query = "SELECT id FROM linhas_onibus WHERE numero = @linhaSelecionada";
 
 
             //conexao ao banco por meio da classe BancoDeDados.cs
@@ -221,7 +215,7 @@ namespace CMB
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@selectedBusLine", selectedBusLine);
+                        command.Parameters.AddWithValue("@linhaSelecionada", linhaSelecionada);
 
                         object result = command.ExecuteScalar();
                         if (result != null && result != DBNull.Value && int.TryParse(result.ToString(), out int id))
@@ -241,10 +235,10 @@ namespace CMB
 
 
         //recupera o ID do problema selecionado na combobox e verifica se a descricao do problema esta de acordo com a opcao selecionada na combobox.
-        private int GetProblemTypeId(string selectedProblemType)
+        private int GetProblemTypeId(string tipoProblemaSelecionado)
         {
             int problemTypeId = 0;
-            string query = "SELECT id FROM problemas_tipos WHERE descricao = @selectedProblemType";
+            string query = "SELECT id FROM problemas_tipos WHERE descricao = @tipoProblemaSelecionado";
 
 
             //conexao ao banco por meio da classe BancoDeDados.cs
@@ -258,7 +252,7 @@ namespace CMB
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@selectedProblemType", selectedProblemType);
+                        command.Parameters.AddWithValue("@tipoProblemaSelecionado", tipoProblemaSelecionado);
 
                         object result = command.ExecuteScalar();
                         if (result != null && result != DBNull.Value && int.TryParse(result.ToString(), out int id))
@@ -284,9 +278,5 @@ namespace CMB
 
         }
 
-        private void txtEmail_TextChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }

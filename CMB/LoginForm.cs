@@ -57,64 +57,68 @@ namespace CMB
         //evento de clique do botao login
         private void btnLogin_Click(object sender, EventArgs e)
         {
-
-            //variaveis para guardar email e senha de acordo com o que for preenchido nas textbox
-            var email = txtEmail.Text;
-            var senha = txtSenha.Text;
-
-            //conexao ao banco por meio da classe BancoDeDados.cs
-            var dbManager = new DatabaseManager();
-            using (var connection = dbManager.GetConnection())
+            try
             {
-                connection.Open();
+                //variaveis para guardar email e senha de acordo com o que for preenchido nas textbox
+                var email = txtEmail.Text;
+                var senha = txtSenha.Text;
 
-                //select que verifica se a conta existe na tabela passageiros
-                var query = "SELECT COUNT(*) FROM passageiros WHERE email = @email AND senha = @senha";
-                using (var command = new MySqlCommand(query, connection))
+                //conexao ao banco por meio da classe BancoDeDados.cs
+                var dbManager = new DatabaseManager();
+                using (var connection = dbManager.GetConnection())
                 {
-                    command.Parameters.AddWithValue("@email", email);
-                    command.Parameters.AddWithValue("@senha", senha);
+                    connection.Open();
 
-                    var result = Convert.ToInt32(command.ExecuteScalar());
-
-                    if (result > 0)
+                    //select que verifica se a conta existe na tabela passageiros
+                    var query = "SELECT COUNT(*) FROM passageiros WHERE email = @email AND senha = @senha";
+                    using (var command = new MySqlCommand(query, connection))
                     {
-                        var nomeUsuario = ObterNomeUsuario(email); //funcao para obter o nome com base no email adicionada a variavel nomeUsuario
-                        Email = email; //atribui o valor de email para a propriedade Email
+                        command.Parameters.AddWithValue("@email", email);
+                        command.Parameters.AddWithValue("@senha", senha);
 
+                        var result = Convert.ToInt32(command.ExecuteScalar());
 
-                        Hide();
-                        HomeForm homeForm = new HomeForm();
-                        homeForm.UserName = nomeUsuario;
-                        homeForm.Email = email; //aqui o email passa para o HomeForm pelos getters e setters
-                        homeForm.ShowDialog();
+                        if (result > 0)
+                        {
+                            var nomeUsuario = ObterNomeUsuario(email); //funcao para obter o nome com base no email adicionada a variavel nomeUsuario
+                            Email = email; //atribui o valor de email para a propriedade Email
 
-                        string emailUsuario = homeForm.Email;
-                        EnviarForm enviarForm = new EnviarForm();
-                        enviarForm.Email = emailUsuario; //aqui o email passa para o EnviarForm pelos getters e setters
+                            Hide();
+                            HomeForm homeForm = new HomeForm();
+                            homeForm.UserName = nomeUsuario;
+                            homeForm.Email = email; //aqui o email passa para o HomeForm pelos getters e setters
+                            homeForm.ShowDialog();
+                            Show();
+                            string emailUsuario = homeForm.Email;
+                            EnviarForm enviarForm = new EnviarForm();
+                            enviarForm.Email = emailUsuario; //aqui o email passa para o EnviarForm pelos getters e setters
 
-                        enviarForm.ShowDialog();
-                        Show();
-
+                            
+                        }
+                        else
+                        {
+                            //retorno da condicional caso o usuario nao esteja cadastrado
+                            MessageBox.Show("Usuário não cadastrado!");
+                        }
                     }
-                    else
-                    {
-                        //retorno da condicional caso o usuario nao esteja cadastrado
-                        MessageBox.Show("Usuário não cadastrado!");
-                    }
-                   
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocorreu um erro durante o login: " + ex.Message);
             }
         }
 
         //abre o formulario de cadastro
         private void btnFormCadastro_Click_1(object sender, EventArgs e)
         {
-            RegisterForm registerForm = new RegisterForm();
-
-            Hide();
+            RegisterForm registerForm = new RegisterForm();         
             registerForm.ShowDialog();
-            Show();
+        }
+
+        private void txtSenha_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

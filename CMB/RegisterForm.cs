@@ -1,12 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static CMB.BancoDeDados;
 
@@ -21,7 +15,12 @@ namespace CMB
             //esconde as caracteres do campo senha
             txtSenha.UseSystemPasswordChar = true;
             txtConfirmarSenha.UseSystemPasswordChar = true;
+            dateTimePickerNascimento.Format = DateTimePickerFormat.Custom;
+            dateTimePickerNascimento.CustomFormat = "yyyy/MM/dd";
+            var nascimento = dateTimePickerNascimento.Value.ToString("yyyy-MM-dd");
         }
+
+
 
         private void btnCadastrar_Click(object sender, EventArgs e)
         {
@@ -29,17 +28,36 @@ namespace CMB
             //aloca as informacoes preenchidas nas textbox para as variaveis.
 
             var nome = txtNome.Text;
-            var nascimento = txtNascimento.Text;
+            var nascimento = dateTimePickerNascimento.Text;
             var email = txtEmail.Text;
             var senha = txtSenha.Text;
             var confirmaSenha = txtConfirmarSenha.Text;
             var termosAceitos = checkBoxTermos.Checked;
 
-            if (!termosAceitos || string.IsNullOrWhiteSpace(nome) || senha != confirmaSenha)
+            if (!termosAceitos || string.IsNullOrWhiteSpace(nome) || !email.Contains("@") || senha.Length < 5 || senha != confirmaSenha)
             {
-                //verificacao se a checkbox foi marcada e tambem se as senhas coincidem.
+                
+                if (!termosAceitos)
+                {
+                    MessageBox.Show("Você deve aceitar os termos de uso para cadastrar-se.");
+                }
+                else if (string.IsNullOrWhiteSpace(nome))
+                {
+                    MessageBox.Show("O nome é obrigatório, preencha-o corretamente.");
+                }
+                else if (!email.Contains("@"))
+                {
+                    MessageBox.Show("O email é inválido. Por favor, insira um e-mail válido.");
+                }
+                else if (senha.Length < 5)
+                {
+                    MessageBox.Show("A senha deve ter no mínimo 5 caracteres.");
+                }
+                else if (senha != confirmaSenha)
+                {
+                    MessageBox.Show("A confirmação de senha não corresponde a sua senha.");
+                }
 
-                MessageBox.Show("Por favor, corrija as informações!");
                 return;
             }
 
@@ -77,7 +95,14 @@ namespace CMB
 
         private void RegisterForm_Load(object sender, EventArgs e)
         {
-
+            this.StartPosition = FormStartPosition.Manual; //forca o form a loadar em uma posicao especifica
+            this.Location = new Point(600, 200);
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
     }
 }
