@@ -1,6 +1,7 @@
 # Cade meu Busao
 
 Cade meu Busao é um sistema para rastreamento e gerenciamento de linhas de ônibus, motoristas e problemas relacionados aos serviços de transporte público.
+Desenvolvido como projeto interdisciplinar para o segundo e terceiro semestre de Analise e Desenvolvimento de Sistemas!
 
 ## Recursos Principais
 
@@ -26,7 +27,3 @@ Cade meu Busao é um sistema para rastreamento e gerenciamento de linhas de ôni
 3. Certifique-se de ter instaladas as bibliotecas necessárias, como MySql.Data.
 4. Configure a conexão com o banco de dados no arquivo `DatabaseManager.cs`.
 5. Compile e execute o projeto.
-
-## Contribuição
-
-Contribuições são bem-vindas! Se você quiser contribuir com melhorias, correções de bugs ou novos recursos, sinta-se à vontade para abrir uma issue ou enviar um pull request.
